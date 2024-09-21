@@ -32,24 +32,22 @@ IPv6Packet::~IPv6Packet() {
 // 获取本地 MAC 地址的函数实现
 std::string IPv6Packet::getMacAddress() const {
     // 使用 ip 命令获取 MAC 地址
-    std::string getMacAddress();
-    {
-        std::string command = "ip link show ens33 | grep link/ether | awk '{print $2}'";
-        FILE* pipe = popen(command.c_str(), "r");
-        if (!pipe) {
-            return "";
-        }
-        char buffer[128];
-        std::string mac_address = "";
-        while (!feof(pipe)) {
-            if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                mac_address = buffer;
-            }
-        }
-        pclose(pipe);
-        mac_address.erase(mac_address.find_last_not_of(" \n\r\t")+1); // 移除可能存在的换行符
-        return mac_address;
+    // std::string getMacAddress();
+    std::string command = "ip link show ens33 | grep link/ether | awk '{print $2}'";
+    FILE* pipe = popen(command.c_str(), "r");
+    if (!pipe) {
+        return "";
     }
+    char buffer[128];
+    std::string mac_address = "";
+    while (!feof(pipe)) {
+        if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            mac_address = buffer;
+        }
+    }
+    pclose(pipe);
+    mac_address.erase(mac_address.find_last_not_of(" \n\r\t")+1); // 移除可能存在的换行符
+    return mac_address;
 
     // 使用 ifconfig 命令获取 MAC 地址
     // std::string command = "ifconfig " + std::string("eens33") + " | grep ether | awk '{print $2}'";
