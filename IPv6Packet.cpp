@@ -2,6 +2,7 @@
 #include <net/ethernet.h>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
 
 // 构造函数，初始化目标地址、用户数据和创建 libpcap 句柄
 IPv6Packet::IPv6Packet(const std::string& dst_addr, const std::string& user_data)
@@ -9,7 +10,7 @@ IPv6Packet::IPv6Packet(const std::string& dst_addr, const std::string& user_data
     
     // 打开网络设备以进行发送
     char errbuf[PCAP_ERRBUF_SIZE];
-    handle_ = pcap_open_live("en0", BUFSIZ, 1, 1000, errbuf); // 替换为实际的网络接口名称
+    handle_ = pcap_open_live("eth0", BUFSIZ, 1, 1000, errbuf); // 替换为实际的网络接口名称
     if (handle_ == nullptr) {
         std::cerr << "Failed to open device: " << errbuf << std::endl;
         return;
@@ -31,7 +32,7 @@ IPv6Packet::~IPv6Packet() {
 // 获取本地 MAC 地址的函数实现
 std::string IPv6Packet::getMacAddress() const {
     // 使用 ifconfig 命令获取 MAC 地址
-    std::string command = "ifconfig " + std::string("en0") + " | grep ether | awk '{print $2}'";
+    std::string command = "ifconfig " + std::string("eth0") + " | grep ether | awk '{print $2}'";
     FILE* pipe = popen(command.c_str(), "r");
     if (!pipe) {
         return "";

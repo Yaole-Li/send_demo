@@ -5,13 +5,11 @@ project(IPv6PacketProject)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# 使用 Homebrew 安装的 libpcap
-include_directories(/opt/homebrew/opt/libpcap/include)
-link_directories(/opt/homebrew/opt/libpcap/lib)
+# 在 CentOS 中查找 libpcap
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PCAP REQUIRED libpcap)
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -target arm64-apple-macos11")
-
-# 包含目录
+# 包含 libpcap 的头文件目录
 include_directories(${PCAP_INCLUDE_DIRS})
 
 # 源文件
