@@ -10,7 +10,7 @@ IPv6Packet::IPv6Packet(const std::string& dst_addr, const std::string& user_data
     
     // 打开网络设备以进行发送
     char errbuf[PCAP_ERRBUF_SIZE];
-    handle_ = pcap_open_live("eth0", BUFSIZ, 1, 1000, errbuf); // 替换为实际的网络接口名称
+    handle_ = pcap_open_live("ens33", BUFSIZ, 1, 1000, errbuf); // 替换为实际的网络接口名称
     if (handle_ == nullptr) {
         std::cerr << "Failed to open device: " << errbuf << std::endl;
         return;
@@ -31,22 +31,42 @@ IPv6Packet::~IPv6Packet() {
 
 // 获取本地 MAC 地址的函数实现
 std::string IPv6Packet::getMacAddress() const {
-    // 使用 ifconfig 命令获取 MAC 地址
-    std::string command = "ifconfig " + std::string("eth0") + " | grep ether | awk '{print $2}'";
-    FILE* pipe = popen(command.c_str(), "r");
-    if (!pipe) {
-        return "";
-    }
-    char buffer[128];
-    std::string mac_address = "";
-    while (!feof(pipe)) {
-        if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-            mac_address = buffer;
+    // 使用 ip 命令获取 MAC 地址
+    std::string getMacAddress();
+    {
+        std::string command = "ip link show ens33 | grep link/ether | awk '{print $2}'";
+        FILE* pipe = popen(command.c_str(), "r");
+        if (!pipe) {
+            return "";
         }
+        char buffer[128];
+        std::string mac_address = "";
+        while (!feof(pipe)) {
+            if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                mac_address = buffer;
+            }
+        }
+        pclose(pipe);
+        mac_address.erase(mac_address.find_last_not_of(" \n\r\t")+1); // 移除可能存在的换行符
+        return mac_address;
     }
-    pclose(pipe);
-    mac_address.erase(mac_address.find_last_not_of(" \n\r\t")+1); // 移除可能存在的换行符
-    return mac_address;
+
+    // 使用 ifconfig 命令获取 MAC 地址
+    // std::string command = "ifconfig " + std::string("eens33") + " | grep ether | awk '{print $2}'";
+    // FILE* pipe = popen(command.c_str(), "r");
+    // if (!pipe) {
+    //     return "";
+    // }
+    // char buffer[128];
+    // std::string mac_address = "";
+    // while (!feof(pipe)) {
+    //     if (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+    //         mac_address = buffer;
+    //     }
+    // }
+    // pclose(pipe);
+    // mac_address.erase(mac_address.find_last_not_of(" \n\r\t")+1); // 移除可能存在的换行符
+    // return mac_address;
 }
 
 // 将 MAC 地址字符串转换为字节数组

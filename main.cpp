@@ -2,7 +2,7 @@
 
 int main() {
     // 目标 IPv6 地址和用户数据
-    std::string dst_addr = "2a02:4780:12:e732::1"; // 替换为实际的目标 IPv6 地址
+    std::string dst_addr = "240e:608:702:8000:59d7:1328:4cf9:dd7a"; // 替换为实际的目标 IPv6 地址
     std::string user_data = "This is a test message.";
 
     // 构建 IPv6 数据包
